@@ -74,6 +74,7 @@ public class Calc {
 */
 
     // Метод для сохранения студентов в файл JSON
+    //http://localhost:8080/students/save
     @PostMapping(value = "/students/save", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> saveStudentsToFile() {
         try {
