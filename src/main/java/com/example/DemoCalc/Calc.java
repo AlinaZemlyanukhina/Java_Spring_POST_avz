@@ -1,19 +1,26 @@
 package com.example.DemoCalc;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 
 @Controller
 @RestController
 public class Calc {
+
+    private static final String FILE_PATH = "students.json";
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @GetMapping("/sum")
     public int sum(@RequestParam int a, @RequestParam int b){
@@ -47,6 +54,7 @@ public class Calc {
         return student;
     }
 
+    //Создание нового студента
     //http://localhost:8080/students/create
     @PostMapping(value = "/students/create", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Students> createStudent(@RequestBody Students student){
@@ -65,6 +73,17 @@ public class Calc {
     }
 */
 
+    // Метод для сохранения студентов в файл JSON
+    @PostMapping(value = "/students/save", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> saveStudentsToFile() {
+        try {
+            objectMapper.writeValue(new File(FILE_PATH), studentList);
+            return new ResponseEntity<>("Студенты успешно сохранены в файл!", HttpStatus.OK);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>("Ошибка при сохранении студентов в файл!", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
     // Получение всего списка студентов
     @GetMapping("/all")
@@ -72,6 +91,7 @@ public class Calc {
         return new ResponseEntity<>(studentList, HttpStatus.OK);
     }
 
+    // Получение конкретного пользователя
     @GetMapping("/students/{name}/{age}/{email}")
     public ResponseEntity<Students> pathVariableDemo(@PathVariable String name, @PathVariable int age, @PathVariable String email){
         System.out.println(name);
